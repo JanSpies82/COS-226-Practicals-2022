@@ -11,10 +11,10 @@ public class Transport extends Thread {
 
 	@Override
 	public void run() {
-		for (int t = 1; t < 6; t++) {
+		for (int t = 1; t < 3; t++) {
 			System.out.println("BUS (" + Thread.currentThread().getName() + ") is waiting to drop-off: Load " + t);
-			f.lock();
-			// b.lock();
+			// f.lock();
+			b.lock();
 			try {
 				System.out.println("BUS (" + Thread.currentThread().getName() + ") is dropping-off: Load " + t);
 				destination.dropOff();
@@ -22,8 +22,8 @@ public class Transport extends Thread {
 				e.printStackTrace();
 			} finally {
 				System.out.println("BUS (" + Thread.currentThread().getName() + ") has left: Load " + t);
-				f.unlock();
-				// b.unlock();
+				// f.unlock();
+				b.unlock();
 			}
 		}
 	}
