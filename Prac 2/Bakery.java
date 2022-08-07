@@ -9,9 +9,9 @@ import java.util.HashMap;
 
 public class Bakery implements Lock {
 	int n;
-	private HashMap<String, Integer> index;
-	private Boolean[] flag;
-	private Integer[] label;
+	volatile private HashMap<String, Integer> index;
+	volatile private Boolean[] flag;
+	volatile private Integer[] label;
 
 	public void lockInterruptibly() throws InterruptedException {
 		throw new UnsupportedOperationException();
@@ -46,8 +46,8 @@ public class Bakery implements Lock {
 		flag[index.get(Thread.currentThread().getName())] = true;
 		label[index.get(Thread.currentThread().getName())] = getMax(label) + 1;
 		while (lowerExists(index.get(Thread.currentThread().getName()), Thread.currentThread().getName())) {
-
 		}
+		System.out.println("unblocking " + Thread.currentThread().getName() + " with label " + label[index.get(Thread.currentThread().getName())]);
 	}
 
 	@Override
@@ -73,11 +73,20 @@ public class Bakery implements Lock {
 
 	private Boolean lowerExists(int curr, String name) {
 		for (int t = 0; t < n; t++) {
-			if (t != index.get(name) && label[t] < curr && flag[t]) {
+			if (t < index.get(name) && label[t] < curr && flag[t]) {
 				return true;
 			}
 		}
 		return false;
 	}
+
+	// private Boolean existsFlag(Boolean[] arr){
+	// 	for (Boolean b : arr) {
+	// 		if (b) {
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 }
