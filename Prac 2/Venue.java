@@ -5,7 +5,8 @@ public class Venue {
 	Lock l;
 
 	public void dropOff() throws InterruptedException {
-		System.out.println("Drop off");
-		Thread.currentThread().sleep((long) Math.floor(Math.random() * (1000 + 1 - 200 + 1) + 200));
+		long time = (long) Math.floor(Math.random() * (1000 + 1 - 200 + 1) + 200);
+		Thread.currentThread().sleep(time);
+		System.out.println("Drop off - " + time);
 	}
 }

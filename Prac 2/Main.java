@@ -1,15 +1,17 @@
-import java.util.HashMap;
+// import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) {
-	    Transport[] buses = new Transport[5];
+        int size = 2;
+	    Transport[] buses = new Transport[size];
 
         Venue destination = new Venue();
-        Filter filter = new Filter(5);
+        Filter filter = new Filter(size);
         Bakery bakery = new Bakery();
 
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < size; i++)
             buses[i] = new Transport(destination, filter, bakery);
+
 
         for(Transport bus : buses)
             bus.start();

@@ -2,8 +2,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-// Name:
-// Student Number:
+// Name: Janco Spies
+// Student Number: u21434159
 
 public class Bakery implements Lock
 {

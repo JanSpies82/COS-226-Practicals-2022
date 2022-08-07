@@ -14,19 +14,22 @@ public class Filter implements Lock {
 	private int n;
 
 	public void lockInterruptibly() throws InterruptedException {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
 	}
 
 	public boolean tryLock() {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public Condition newCondition() {
-		throw new UnsupportedOperationException();
+		// throw new UnsupportedOperationException();
+		return null;
 	}
 
 	public Filter(int size) {
@@ -60,7 +63,7 @@ public class Filter implements Lock {
 
 	private Boolean higherExists(int curr) {
 		for (String s : index.keySet()) {
-			System.out.println("Index " + s + ": " + index.get(s));
+			// System.out.println("Index " + s + ": " + index.get(s));
 			if (level[index.get(s)] > curr) {
 				return true;
 			}
