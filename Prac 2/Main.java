@@ -2,7 +2,7 @@
 
 public class Main {
     public static void main(String[] args) {
-        int size = 2;
+        int size = 5;
 	    Transport[] buses = new Transport[size];
 
         Venue destination = new Venue();

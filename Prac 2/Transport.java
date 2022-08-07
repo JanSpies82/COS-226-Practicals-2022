@@ -11,7 +11,7 @@ public class Transport extends Thread {
 
 	@Override
 	public void run() {
-		for (int t = 0; t < 1; t++) {
+		for (int t = 1; t < 6; t++) {
 			System.out.println("BUS (" + Thread.currentThread().getName() + ") is waiting to drop-off: Load " + t);
 			f.lock();
 			// b.lock();
