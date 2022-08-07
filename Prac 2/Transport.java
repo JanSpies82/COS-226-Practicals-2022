@@ -21,6 +21,7 @@ public class Transport extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
+				System.out.println("BUS (" + Thread.currentThread().getName() + ") has left: Load " + t);
 				f.unlock();
 				// b.unlock();
 			}
