@@ -2,30 +2,37 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-// Name:
-// Student Number:
+// Name: Janco Spies
+// Student Number: u21434159
 
-public class Filter implements Lock
-{
-
-	public void lockInterruptibly() throws InterruptedException
-	{
+public class Filter implements Lock {
+	public void lockInterruptibly() throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
 
-	public boolean tryLock()
-	{
+	public boolean tryLock() {
 		throw new UnsupportedOperationException();
 	}
 
-	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-	{
+	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
 
-	public Condition newCondition()
-	{
+	public Condition newCondition() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void lock() {
+		// TODO Auto-generated method stub
+		// get name of current thread accessing lock
+		System.out.println("Locking for " + Thread.currentThread().getName());
+	}
+
+	@Override
+	public void unlock() {
+		// TODO Auto-generated method stub
+		System.out.println("unlocking for " + Thread.currentThread().getName());
 	}
 
 }

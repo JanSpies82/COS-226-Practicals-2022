@@ -28,4 +28,16 @@ public class Bakery implements Lock
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void lock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unlock() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
