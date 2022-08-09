@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Bakery implements Lock {
 	int n;
-	volatile private HashMap<String, Integer> index;
+	volatile private HashMap<Long, Integer> index;
 	volatile private Boolean[] flag;
 	volatile private Integer[] label;
 
@@ -33,7 +33,7 @@ public class Bakery implements Lock {
 		n = size;
 		flag = new Boolean[size];
 		label = new Integer[size];
-		index = new HashMap<String, Integer>();
+		index = new HashMap<Long, Integer>();
 		for (int i = 0; i < size; i++) {
 			flag[i] = false;
 			label[i] = 0;
@@ -42,51 +42,58 @@ public class Bakery implements Lock {
 
 	@Override
 	public void lock() {
-		addIndex(Thread.currentThread().getName());
-		flag[index.get(Thread.currentThread().getName())] = true;
-		label[index.get(Thread.currentThread().getName())] = getMax(label) + 1;
-		while (lowerExists(index.get(Thread.currentThread().getName()), Thread.currentThread().getName())) {
+		addIndex(Thread.currentThread().getId());
+		Integer max = label[0];
+		for (Integer i : label) {
+			if (i > max)
+				max = i;
 		}
-		System.out.println("unblocking " + Thread.currentThread().getName() + " with label " + label[index.get(Thread.currentThread().getName())]);
+		label[index.get(Thread.currentThread().getId())] = max + 1;
+		flag[index.get(Thread.currentThread().getId())] = true;
+		while (lowerExists(Thread.currentThread().getId())) {
+		}
+		System.out.println("Unblocking with " + label[index.get(Thread.currentThread().getId())]);
 	}
 
 	@Override
 	public void unlock() {
-		flag[index.get(Thread.currentThread().getName())] = false;
+		flag[index.get(Thread.currentThread().getId())] = false;
 	}
 
-	private void addIndex(String name) {
-		if (!index.containsKey(name)) {
-			index.put(name, index.size());
+	private void addIndex(Long id) {
+		if (!index.containsKey(id)) {
+			index.put(id, index.size());
 		}
 	}
 
-	private Integer getMax(Integer[] arr) {
-		Integer max = null;
-		for (Integer i : arr) {
-			if (max == null || i > max) {
-				max = i;
-			}
-		}
-		return max;
-	}
+	// private Integer getMax(Integer[] arr) {
+	// Integer max = null;
+	// for (Integer i : arr) {
+	// if (max == null || i > max) {
+	// max = i;
+	// }
+	// }
+	// return max;
+	// }
 
-	private Boolean lowerExists(int curr, String name) {
+	private Boolean lowerExists(Long id) {
 		for (int t = 0; t < n; t++) {
-			if (t < index.get(name) && label[t] < curr && flag[t]) {
+			if (flag[t] && (label[t] < label[index.get(id)]
+					|| (label[t] == label[index.get(id)] && getId(t) < id))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	// private Boolean existsFlag(Boolean[] arr){
-	// 	for (Boolean b : arr) {
-	// 		if (b) {
-	// 			return true;
-	// 		}
-	// 	}
-	// 	return false;
-	// }
+	private Long getId(int ind) {
+		HashMap<Long, Integer> temp = index;
+		for (Long l : temp.keySet()) {
+			if (temp.get(l) == ind) {
+				return l;
+			}
+		}
+		return 0L;
+	}
 
 }

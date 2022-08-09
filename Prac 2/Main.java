@@ -2,7 +2,7 @@
 
 public class Main {
     public static void main(String[] args) {
-        int size = 2;
+        int size = 5;
         Transport[] buses = new Transport[size];
 
         Venue destination = new Venue();
@@ -12,8 +12,14 @@ public class Main {
         for (int i = 0; i < size; i++)
             buses[i] = new Transport(destination, filter, bakery);
 
-        for (Transport bus : buses)
+        for (Transport bus : buses) {
             bus.start();
+            // try {
+            //     Thread.currentThread().sleep(5);
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+        }
 
         // HashMap<String, Integer> r = new HashMap();
         // r.put("a", 1);
