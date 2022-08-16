@@ -48,15 +48,21 @@ public class Bakery implements Lock {
 			if (i > max)
 				max = i;
 		}
-		label[index.get(Thread.currentThread().getId())] = max + 1;
+		if (index.get(Thread.currentThread().getId()) == null)
+			addIndex(Thread.currentThread().getId());
+		label[index.get(Thread.currentThread().getId())] = max
+				+ 1;
 		flag[index.get(Thread.currentThread().getId())] = true;
 		while (lowerExists(Thread.currentThread().getId())) {
 		}
-		System.out.println("Unblocking with " + label[index.get(Thread.currentThread().getId())]);
+		// System.out.println("Unblocking with " +
+		// label[index.get(Thread.currentThread().getId())]);
 	}
 
 	@Override
 	public void unlock() {
+		if (index.get(Thread.currentThread().getId()) == null)
+			addIndex(Thread.currentThread().getId());
 		flag[index.get(Thread.currentThread().getId())] = false;
 	}
 
@@ -78,8 +84,8 @@ public class Bakery implements Lock {
 
 	private Boolean lowerExists(Long id) {
 		for (int t = 0; t < n; t++) {
-			if (flag[t] && (label[t] < label[index.get(id)]
-					|| (label[t] == label[index.get(id)] && getId(t) < id))) {
+			if (flag[t] && (label[t] < label[(index.get(id) == null ? 0 : index.get(id))]
+					|| (label[t] == label[(index.get(id) == null ? 0 : index.get(id))] && getId(t) < id))) {
 				return true;
 			}
 		}
