@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Filter implements Lock {
 	private HashMap<Integer, String> victim;
-	private HashMap<String, Integer> index;
+	// private HashMap<String, Integer> index;
 	private Integer[] level;
 	private int n;
 
@@ -34,7 +34,7 @@ public class Filter implements Lock {
 
 	public Filter(int size) {
 		victim = new HashMap<Integer, String>();
-		index = new HashMap<String, Integer>();
+		// index = new HashMap<String, Integer>();
 		level = new Integer[size];
 		n = size;
 
@@ -46,12 +46,13 @@ public class Filter implements Lock {
 
 	@Override
 	public void lock() {
-		addIndex(Thread.currentThread().getName());
+		// addIndex(Thread.currentThread().getName());
+		Integer id = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7))) % n;
 		int L = 1;
 		for (L = 1; L <= n - 1; L++) {
-			level[index.get(Thread.currentThread().getName())] = L;
+			level[id] = L;
 			victim.put(L, Thread.currentThread().getName());
-			while (higherExists(L, Thread.currentThread().getName())
+			while (higherExists(L)
 					&& victim.get(L) == Thread.currentThread().getName()) {
 			}
 		}
@@ -60,21 +61,23 @@ public class Filter implements Lock {
 
 	@Override
 	public void unlock() {
-		level[index.get(Thread.currentThread().getName())] = 0;
+		Integer id = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7))) % n;
+		level[id] = 0;
 	}
 
-	private Boolean higherExists(int curr, String name) {
+	private Boolean higherExists(int curr) {
+		Integer id = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7))) % n;
 		for (int t = 0; t < n; t++) {
-			if (t != index.get(name) && level[t] >= curr) {
+			if (t != id && level[t] >= curr) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private void addIndex(String name) {
-		if (!index.containsKey(name)) {
-			index.put(name, index.size());
-		}
-	}
+	// private void addIndex(String name) {
+	// if (!index.containsKey(name)) {
+	// index.put(name, index.size());
+	// }
+	// }
 }
