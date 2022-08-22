@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 public class Filter implements Lock {
 	private HashMap<Integer, String> victim;
-	// private HashMap<String, Integer> index;
 	private Integer[] level;
 	private int n;
 
@@ -34,7 +33,6 @@ public class Filter implements Lock {
 
 	public Filter(int size) {
 		victim = new HashMap<Integer, String>();
-		// index = new HashMap<String, Integer>();
 		level = new Integer[size];
 		n = size;
 
@@ -46,7 +44,6 @@ public class Filter implements Lock {
 
 	@Override
 	public void lock() {
-		// addIndex(Thread.currentThread().getName());
 		Integer id = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7))) % n;
 		int L = 1;
 		for (L = 1; L <= n - 1; L++) {
@@ -74,10 +71,4 @@ public class Filter implements Lock {
 		}
 		return false;
 	}
-
-	// private void addIndex(String name) {
-	// if (!index.containsKey(name)) {
-	// index.put(name, index.size());
-	// }
-	// }
 }
