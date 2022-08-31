@@ -9,5 +9,5 @@ public abstract class ConsensusProtocol<T> implements Consensus<T> {
 		proposed[proposed[0] == null ? 0 : 1] = value;
 	}
 
-	abstract public void decide();
+	abstract public Object decide();
 }

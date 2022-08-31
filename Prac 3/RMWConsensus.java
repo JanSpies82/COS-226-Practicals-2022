@@ -2,13 +2,12 @@ public class RMWConsensus extends ConsensusProtocol<Integer> {
 
     public RMWConsensus(int threadCount) {
         super(threadCount);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
-    public void decide() {
+    public Object decide() {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
 }

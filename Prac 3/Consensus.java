@@ -1,5 +1,5 @@
 public interface Consensus<T>
 {
-	void decide();
+	Object decide();
 	void propose(T value);
 }
