@@ -6,13 +6,7 @@ public abstract class ConsensusProtocol<T> implements Consensus<T> {
 	}
 
 	public void propose(T value) {
-		int i = 0;
-		while (i < proposed.length && proposed[i] != null) {
-			i++;
-		}
-		if (i < proposed.length) {
-			proposed[i] = value;
-		}
+		proposed[proposed[0] == null ? 0 : 1] = value;
 	}
 
 	abstract public void decide();
