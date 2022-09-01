@@ -1,10 +1,9 @@
 import java.util.concurrent.locks.Lock;
 
-public class myThread {
+public class myThread extends Thread {
     private volatile Lock lock;
 
-    public myThread(Lock lock) {
-        this.lock = lock;
+    public myThread() {
     }
 
     public void setLock(Lock lock) {
