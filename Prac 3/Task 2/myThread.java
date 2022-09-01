@@ -2,8 +2,10 @@ import java.util.concurrent.locks.Lock;
 
 public class myThread extends Thread {
     private volatile Lock lock;
+    private int num;
 
-    public myThread() {
+    public myThread(int num) {
+        this.num = num;
     }
 
     public void setLock(Lock lock) {
@@ -11,13 +13,15 @@ public class myThread extends Thread {
     }
 
     public void run() {
-        lock.lock();
-        try {
-            Thread.currentThread().sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
+        for (int h = 0; h < num; h++) {
+            lock.lock();
+            try {
+                Thread.currentThread().sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                lock.unlock();
+            }
         }
     }
 }

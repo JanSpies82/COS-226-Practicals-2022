@@ -3,7 +3,7 @@ import java.util.concurrent.locks.Lock;
 
 public class Main {
 
-    public myThread[][] createArrays() {
+    public myThread[][] createArrays(int n) {
         myThread[][] threads = new myThread[6][];
         threads[0] = new myThread[1];
         threads[1] = new myThread[2];
@@ -13,7 +13,7 @@ public class Main {
         threads[5] = new myThread[50];
         for (int i = 0; i < threads.length; i++) {
             for (int j = 0; j < threads[i].length; j++) {
-                threads[i][j] = new myThread();
+                threads[i][j] = new myThread(n);
             }
         }
         return threads;
@@ -27,10 +27,10 @@ public class Main {
         }
     }
 
-    public double[] timeTASLock() {
+    public double[] timeTASLock(int n) {
         TASLock taslock = new TASLock();
         double[] tasTimes = new double[6];
-        myThread[][] tasThreads = createArrays();
+        myThread[][] tasThreads = createArrays(n);
         initializeLock(tasThreads, taslock);
 
         for (int i = 0; i < tasThreads.length; i++) {
@@ -53,10 +53,10 @@ public class Main {
         return tasTimes;
     }
 
-    public double[] timeTTASLock() {
+    public double[] timeTTASLock(int n) {
         TTASLock ttaslock = new TTASLock();
         double[] ttasTimes = new double[6];
-        myThread[][] ttasThreads = createArrays();
+        myThread[][] ttasThreads = createArrays(n);
         initializeLock(ttasThreads, ttaslock);
 
         for (int i = 0; i < ttasThreads.length; i++) {
@@ -79,10 +79,10 @@ public class Main {
         return ttasTimes;
     }
 
-    public double[] timeBackOffLock() {
+    public double[] timeBackOffLock(int n) {
         BackoffLock backofflock = new BackoffLock();
         double[] backoffTimes = new double[6];
-        myThread[][] backoffThreads = createArrays();
+        myThread[][] backoffThreads = createArrays(n);
         initializeLock(backoffThreads, backofflock);
 
         for (int i = 0; i < backoffThreads.length; i++) {
@@ -116,9 +116,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        double[] tasTimes = new Main().timeTASLock();
-        double[] ttasTimes = new Main().timeTTASLock();
-        double[] backoffTimes = new Main().timeBackOffLock();
+        System.out.print("Please enter how many times each thread should enter its critical section: ");
+        int n = Integer.parseInt(System.console().readLine());
+
+        double[] tasTimes = new Main().timeTASLock(n);
+        double[] ttasTimes = new Main().timeTTASLock(n);
+        double[] backoffTimes = new Main().timeBackOffLock(n);
 
         System.out.println("\nNumber of threads: [1, 2, 5, 15, 30, 50]");
         System.out.println("---------------------------------------------");
