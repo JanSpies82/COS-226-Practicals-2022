@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class Main {
@@ -26,66 +27,85 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        TASLock taslock = new TASLock();
-        long[] tasTimes = new long[6];
-
-        myThread[][] threads = new Main().createArrays();
-        new Main().initializeTAS(threads, taslock);
-
-        for (int i = 0; i < 5; i++) {
-            long startTime = System.nanoTime();
-            //////////////////////////////////////
-            for (int j = 0; j < threads[i].length; j++) {
-                threads[i][j].start();
+    public void initializeTTAS(myThread[][] t, TTASLock lock) {
+        for (int i = 0; i < t.length; i++) {
+            for (int j = 0; j < t[i].length; j++) {
+                t[i][j].setLock(lock);
             }
-            // switch (i) {
-            // case 0: {
-            // for (int k = 0; k < 1; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // case 1: {
-            // for (int k = 0; k < 2; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // case 2: {
-            // for (int k = 0; k < 5; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // case 3: {
-            // for (int k = 0; k < 15; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // case 4: {
-            // for (int k = 0; k < 50; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // case 5: {
-            // for (int k = 0; k < 100; k++)
-            // threads[k].start();
-            // break;
-            // }
-            // default:
-            // break;
-            // }
-            //////////////////////////////////////
-            long stopTime = System.nanoTime();
-            long elapsedTime = Math.round((stopTime - startTime) / 1000);
-            System.out.println(elapsedTime + " us");
-            tasTimes[i] = elapsedTime;
         }
+    }
+
+    public double[] timeTASLock() {
+        TASLock taslock = new TASLock();
+        double[] tasTimes = new double[6];
+        myThread[][] tasThreads = createArrays();
+        initializeTAS(tasThreads, taslock);
+
+        for (int i = 0; i < tasThreads.length; i++) {
+            long startTime = System.nanoTime();
+            for (int j = 0; j < tasThreads[i].length; j++) {
+                tasThreads[i][j].start();
+            }
+            long endTime = System.nanoTime();
+            tasTimes[i] = (endTime - startTime) / 1000000.0;
+            for (int j = 0; j < tasThreads[i].length; j++) {
+                try {
+                    tasThreads[i][j].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            DecimalFormat f = new DecimalFormat("0.0");
+            System.out.println("TASLock-" + i + ": " + f.format(tasTimes[i]) + " ms");
+        }
+        return tasTimes;
+    }
+
+    public double[] timeTTASLock() {
+        TTASLock ttaslock = new TTASLock();
+        double[] ttasTimes = new double[6];
+        myThread[][] ttasThreads = createArrays();
+        initializeTTAS(ttasThreads, ttaslock);
+
+        for (int i = 0; i < ttasThreads.length; i++) {
+            long startTime = System.nanoTime();
+            for (int j = 0; j < ttasThreads[i].length; j++) {
+                ttasThreads[i][j].start();
+            }
+            long endTime = System.nanoTime();
+            ttasTimes[i] = (endTime - startTime) / 1000000.0;
+            for (int j = 0; j < ttasThreads[i].length; j++) {
+                try {
+                    ttasThreads[i][j].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            DecimalFormat f = new DecimalFormat("0.0");
+            System.out.println("TTASLock-" + i + ": " + f.format(ttasTimes[i]) + " ms");
+        }
+        return ttasTimes;
+    }
+
+    public void printTimes(String lock, double[] times) {
+        System.out.print(lock + ": [");
+        DecimalFormat f = new DecimalFormat("0.0");
+        for (int i = 0; i < times.length - 1; i++) {
+            System.out.print(f.format(times[i]) + ", ");
+        }
+        System.out.print(f.format(times[times.length - 1]) + "]");
+        System.out.print(" times in ms\n");
+    }
+
+    public static void main(String[] args) {
+        double[] tasTimes = new Main().timeTASLock();
+        double[] ttasTimes = new Main().timeTTASLock();
 
         System.out.println("Number of threads: [1, 2, 5, 15, 30, 50]");
         System.out.println("---------------------------------------------");
-        System.out.println("TASLock: " + Arrays.toString(tasTimes) + " time in us");
+        new Main().printTimes("TASLock", tasTimes);
+        new Main().printTimes("TTASLock", ttasTimes);
         System.out.println("---------------------------------------------");
 
     }
 }
-// Will test times for amounts of threads:
-// 1, 2, 5, 15, 50, 100
