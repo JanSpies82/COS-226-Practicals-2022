@@ -18,7 +18,7 @@ public class ConsensusThread extends Thread {
 	}
 
 	public void run() {
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 5; j++) {
 			while (!s.canStart()) {
 			}
 			int amount = (int) Math.floor(Math.random() * (200 + 1 - 100 + 1) + 100);

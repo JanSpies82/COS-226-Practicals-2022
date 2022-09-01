@@ -26,22 +26,9 @@ public class RMWConsensus<T> extends ConsensusProtocol<T> {
     public T decide() {
         T v = (T) r.getAndMumble();
         int me = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)));
-        // if ((v ==
-        // proposed[Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)))])
-        // || (v == null &&
-        // proposed[(Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)))+1)%2]
-        // == null))
-        // return (T)
-        // proposed[Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)))];
-        // else
-        // return (T)
-        // proposed[(Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)))
-        // + 1) % 2];
-
-        if ((v == proposed[me]) || (v == null && proposed[(me + 1) % 2] == null)) {
-            System.out.println(GREEN + "Thread " + me + ": other proposed - " + proposed[(me + 1) % 2] + RESET);
+        if ((v == proposed[me]) || (v == null && proposed[(me + 1) % 2] == null))
             return (T) proposed[me];
-        } else
+        else
             return (T) proposed[(me + 1) % 2];
     }
 

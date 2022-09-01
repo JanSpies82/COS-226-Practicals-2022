@@ -25,18 +25,8 @@ class Main {
         threads[0] = new ConsensusThread(consensus, s);
         threads[1] = new ConsensusThread(consensus, s);
 
-        // for (Thread t : threads)
-        // t.start();
-
-        // try {
-        // Thread.currentThread().sleep(150);
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // }
-
-        for (int h = 0; h < 2; h++)
-            threads[h].start();
-
+        for (Thread t : threads)
+            t.start();
     }
 
     public static void Task2() {

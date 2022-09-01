@@ -2,6 +2,7 @@
 public class RMWRegister<T> {
     private T value;
     private static RMWRegister instance = null;
+    int lastaccessed;
 
     public static final String RESET = "\033[0m";
     public static final String BLACK = "\033[0;30m";
@@ -32,11 +33,14 @@ public class RMWRegister<T> {
     public void propose(T value) {
         if (this.value == null)
             this.value = value;
+        lastaccessed = Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)));
     }
 
     public synchronized T getAndMumble() {
+        if (Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7))) == lastaccessed)
+            return null;
         T prior = value;
-        System.out.println("REGISTER VALUE: " + RED + value + " for " + Thread.currentThread().getName() + RESET);
+        System.out.println("REGISTER VALUE: " + RED + value + RESET);
         value = null;
         return prior;
     }
