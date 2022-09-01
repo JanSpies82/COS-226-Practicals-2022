@@ -9,5 +9,11 @@ public abstract class ConsensusProtocol<T> implements Consensus<T> {
 		proposed[Integer.parseInt(String.valueOf(Thread.currentThread().getName().charAt(7)))] = value;
 	}
 
-	abstract public T decide(T value);
+	// public synchronized Object getAndMumble() {
+	// 	Object prior = proposed[0];
+	// 	proposed[0] = null;
+	// 	return prior;
+	// }
+
+	abstract public T decide();
 }

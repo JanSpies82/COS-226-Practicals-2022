@@ -16,7 +16,18 @@ class Main {
     }
 
     public static void Task1() {
-        System.out.println("Hello world1");
+        System.out.println("Starting Task1");
+        ConsensusThread[] threads = new ConsensusThread[2];
+        RMWConsensus<Integer> consensus = new RMWConsensus<Integer>(2);
+
+        for (int i = 0; i < 2; i++)
+            threads[i] = new ConsensusThread(consensus);
+
+        // for (int g = 0; g < 3; g++) {
+            for (Thread t : threads)
+                t.start();
+        // }
+
     }
 
     public static void Task2() {
