@@ -21,8 +21,6 @@ public class RMWRegister<T> {
                     instance = new RMWRegister();
             }
         }
-        // if (instance.value == null)
-        // instance.value = value;
         return instance;
     }
 
