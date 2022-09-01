@@ -1,5 +1,5 @@
 import java.text.DecimalFormat;
-import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
 
 public class Main {
 
@@ -19,15 +19,7 @@ public class Main {
         return threads;
     }
 
-    public void initializeTAS(myThread[][] t, TASLock lock) {
-        for (int i = 0; i < t.length; i++) {
-            for (int j = 0; j < t[i].length; j++) {
-                t[i][j].setLock(lock);
-            }
-        }
-    }
-
-    public void initializeTTAS(myThread[][] t, TTASLock lock) {
+    public void initializeLock(myThread[][] t, Lock lock) {
         for (int i = 0; i < t.length; i++) {
             for (int j = 0; j < t[i].length; j++) {
                 t[i][j].setLock(lock);
@@ -39,7 +31,7 @@ public class Main {
         TASLock taslock = new TASLock();
         double[] tasTimes = new double[6];
         myThread[][] tasThreads = createArrays();
-        initializeTAS(tasThreads, taslock);
+        initializeLock(tasThreads, taslock);
 
         for (int i = 0; i < tasThreads.length; i++) {
             long startTime = System.nanoTime();
@@ -65,7 +57,7 @@ public class Main {
         TTASLock ttaslock = new TTASLock();
         double[] ttasTimes = new double[6];
         myThread[][] ttasThreads = createArrays();
-        initializeTTAS(ttasThreads, ttaslock);
+        initializeLock(ttasThreads, ttaslock);
 
         for (int i = 0; i < ttasThreads.length; i++) {
             long startTime = System.nanoTime();
@@ -87,6 +79,32 @@ public class Main {
         return ttasTimes;
     }
 
+    public double[] timeBackOffLock() {
+        BackoffLock backofflock = new BackoffLock();
+        double[] backoffTimes = new double[6];
+        myThread[][] backoffThreads = createArrays();
+        initializeLock(backoffThreads, backofflock);
+
+        for (int i = 0; i < backoffThreads.length; i++) {
+            long startTime = System.nanoTime();
+            for (int j = 0; j < backoffThreads[i].length; j++) {
+                backoffThreads[i][j].start();
+            }
+            long endTime = System.nanoTime();
+            backoffTimes[i] = (endTime - startTime) / 1000000.0;
+            for (int j = 0; j < backoffThreads[i].length; j++) {
+                try {
+                    backoffThreads[i][j].join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            DecimalFormat f = new DecimalFormat("0.0");
+            System.out.println("BackoffLock-" + i + ": " + f.format(backoffTimes[i]) + " ms");
+        }
+        return backoffTimes;
+    }
+
     public void printTimes(String lock, double[] times) {
         System.out.print(lock + ": [");
         DecimalFormat f = new DecimalFormat("0.0");
@@ -100,11 +118,13 @@ public class Main {
     public static void main(String[] args) {
         double[] tasTimes = new Main().timeTASLock();
         double[] ttasTimes = new Main().timeTTASLock();
+        double[] backoffTimes = new Main().timeBackOffLock();
 
-        System.out.println("Number of threads: [1, 2, 5, 15, 30, 50]");
+        System.out.println("\nNumber of threads: [1, 2, 5, 15, 30, 50]");
         System.out.println("---------------------------------------------");
         new Main().printTimes("TASLock", tasTimes);
         new Main().printTimes("TTASLock", ttasTimes);
+        new Main().printTimes("BackoffLock", backoffTimes);
         System.out.println("---------------------------------------------");
 
     }
