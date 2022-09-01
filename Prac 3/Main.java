@@ -2,9 +2,10 @@ import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) {
-        System.out.print("Please select either Task1 or Task2: ");
-        Scanner input = new Scanner(System.in);
-        String task = input.nextLine();
+        // System.out.print("Please select either Task1 or Task2: ");
+        // Scanner input = new Scanner(System.in);
+        // String task = input.nextLine();
+        String task = "1";
         if (task.equals("1")) {
             Task1();
         } else if (task.equals("2")) {
@@ -12,21 +13,29 @@ class Main {
         } else {
             System.out.println("Invalid input");
         }
-        input.close();
+        // input.close();
     }
 
     public static void Task1() {
         System.out.println("Starting Task1");
         ConsensusThread[] threads = new ConsensusThread[2];
         RMWConsensus<Integer> consensus = new RMWConsensus<Integer>(2);
+        Starter s = new Starter();
 
-        for (int i = 0; i < 2; i++)
-            threads[i] = new ConsensusThread(consensus);
+        threads[0] = new ConsensusThread(consensus, s);
+        threads[1] = new ConsensusThread(consensus, s);
 
-        // for (int g = 0; g < 3; g++) {
-            for (Thread t : threads)
-                t.start();
+        // for (Thread t : threads)
+        // t.start();
+
+        // try {
+        // Thread.currentThread().sleep(150);
+        // } catch (InterruptedException e) {
+        // e.printStackTrace();
         // }
+
+        for (int h = 0; h < 2; h++)
+            threads[h].start();
 
     }
 
