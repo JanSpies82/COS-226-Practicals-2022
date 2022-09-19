@@ -23,18 +23,9 @@ public class MCSQueue implements Lock {
 
     @Override
     public void lock() {
-        // MCSNode node = ((Marshal) Thread.currentThread()).node;
         MCSNode pred = (MCSNode) tail.getAndSet(((Marshal) Thread.currentThread()).node);
-        // System.out.println(tail.get() != null
-        // ? "Tail for " + Thread.currentThread().getName() + " " + ((Marshal)
-        // Thread.currentThread()).node.name + " is "
-        // + ((MCSNode) tail.get()).name
-        // : "Tail for " + Thread.currentThread().getName() + " " + ((Marshal)
-        // Thread.currentThread()).node.name + " is null");
         ((Marshal) Thread.currentThread()).node.prev = pred;
         if (pred != null) {
-            // System.out.println(YELLOW + Thread.currentThread().getName() + " has a pred :
-            // " + pred.name + RESET);
             ((Marshal) Thread.currentThread()).node.locked = true;
             pred.next = ((Marshal) Thread.currentThread()).node;
             while (((Marshal) Thread.currentThread()).node.locked) {

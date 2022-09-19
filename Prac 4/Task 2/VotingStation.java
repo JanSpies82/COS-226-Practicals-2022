@@ -20,15 +20,14 @@ public class VotingStation {
 		System.out.println("[" + Thread.currentThread().getName() + "] [Person " + person
 				+ "] entered the voting station" + RESET);
 		try {
-			l.lock();
-
-			try {
-				Thread.sleep((int) Math.floor(Math.random() * (1000 + 1 - 200 + 1) + 200));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			while (!l.tryLock((int) Math.floor(Math.random() * (5000 + 1 - 2000 + 1) + 2000),
+					java.util.concurrent.TimeUnit.MILLISECONDS)) {
 			}
+			Thread.sleep((int) Math.floor(Math.random() * (1000 + 1 - 200 + 1) + 200));
+
 			System.out.println(
-					YELLOW + "["+ Thread.currentThread().getName() + "] [Person " + person + "] cast a vote" + RESET);
+					YELLOW + "[" + Thread.currentThread().getName() + "] [Person " + person + "] cast a vote" + RESET);
+		} catch (Exception e) {
 		} finally {
 			// System.out.println(Thread.currentThread().getName() + " Person " + person + " exits" + RESET);
 			l.unlock();
