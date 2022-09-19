@@ -26,12 +26,15 @@ public class MCSQueue implements Lock {
         // MCSNode node = ((Marshal) Thread.currentThread()).node;
         MCSNode pred = (MCSNode) tail.getAndSet(((Marshal) Thread.currentThread()).node);
         // System.out.println(tail.get() != null
-        //         ? "Tail for " + Thread.currentThread().getName() + " " + ((Marshal) Thread.currentThread()).node.name + " is "
-        //                 + ((MCSNode) tail.get()).name
-        //         : "Tail for " + Thread.currentThread().getName() + " " + ((Marshal) Thread.currentThread()).node.name + " is null");
-                ((Marshal) Thread.currentThread()).node.prev = pred;
+        // ? "Tail for " + Thread.currentThread().getName() + " " + ((Marshal)
+        // Thread.currentThread()).node.name + " is "
+        // + ((MCSNode) tail.get()).name
+        // : "Tail for " + Thread.currentThread().getName() + " " + ((Marshal)
+        // Thread.currentThread()).node.name + " is null");
+        ((Marshal) Thread.currentThread()).node.prev = pred;
         if (pred != null) {
-            // System.out.println(YELLOW + Thread.currentThread().getName() + " has a pred : " + pred.name + RESET);
+            // System.out.println(YELLOW + Thread.currentThread().getName() + " has a pred :
+            // " + pred.name + RESET);
             ((Marshal) Thread.currentThread()).node.locked = true;
             pred.next = ((Marshal) Thread.currentThread()).node;
             while (((Marshal) Thread.currentThread()).node.locked) {
@@ -41,25 +44,27 @@ public class MCSQueue implements Lock {
 
     @Override
     public void unlock() {
-        MCSNode node = ((Marshal) Thread.currentThread()).node;
-        if (node.next == null) {
-            // System.out.println(Thread.currentThread().getName() + " " + node.name + " has no next");
-            if (tail.compareAndSet(node, null)) {
+        // MCSNode node = ((Marshal) Thread.currentThread()).node;
+        String out = "";
+        out += GREEN + "QUEUE: " + RESET;
+        MCSNode temp = ((Marshal) Thread.currentThread()).node;
+        out += "{" + temp.name + "}";
+        temp = temp.next;
+        while (temp != null) {
+            out += "->{" + temp.name + "}";
+            temp = temp.next;
+        }
+        System.out.println(out);
+
+        if (((Marshal) Thread.currentThread()).node.next == null) {
+            if (tail.compareAndSet(((Marshal) Thread.currentThread()).node, null)) {
                 return;
             }
-            while (node.next == null) {
+            while (((Marshal) Thread.currentThread()).node.next == null) {
             }
         }
-        node.next.locked = false;
+        ((Marshal) Thread.currentThread()).node.next.locked = false;
     }
-
-    // private MCSNode getCurrentNode() {
-    //     MCSNode node = (MCSNode) tail.get();
-    //     while (node.prev != null && node.prev.locked) {
-    //         node = node.prev;
-    //     }
-    //     return node;
-    // }
 
     @Override
     public void lockInterruptibly() throws InterruptedException {

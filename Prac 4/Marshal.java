@@ -10,7 +10,7 @@ public class Marshal extends Thread {
 	@Override
 	public void run() {
 		for (int i = 1; i <= 5; i++) {
-			node = new MCSNode();
+			node = new MCSNode(i);
 			vs.castBallot(i);
 		}
 

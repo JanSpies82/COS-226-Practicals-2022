@@ -17,18 +17,20 @@ public class VotingStation {
 	}
 
 	public void castBallot(int person) {
-		System.out.println(Thread.currentThread().getName() + " Person " + person + " enters voting station" + RESET);
+		System.out.println("[" + Thread.currentThread().getName() + "] [Person " + person
+				+ "] entered the voting station" + RESET);
 		try {
 			l.lock();
 
-			System.out.println(YELLOW + Thread.currentThread().getName() + " Person " + person + " casts a ballot" + RESET);
 			try {
 				Thread.sleep((int) Math.floor(Math.random() * (1000 + 1 - 200 + 1) + 200));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println(
+					YELLOW + "["+ Thread.currentThread().getName() + "] [Person " + person + "] cast a vote" + RESET);
 		} finally {
-			System.out.println(Thread.currentThread().getName() + " Person " + person + " exits" + RESET);
+			// System.out.println(Thread.currentThread().getName() + " Person " + person + " exits" + RESET);
 			l.unlock();
 		}
 	}

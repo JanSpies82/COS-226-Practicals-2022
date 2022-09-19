@@ -7,9 +7,8 @@ public class Main {
         for (int i = 0; i < size; i++)
             marshals[i] = new Marshal(vs);
 
-        for (Marshal m : marshals){
+        for (Marshal m : marshals)
             m.start();
-            // Thread.sleep(5);
-        }
+
     }
 }
