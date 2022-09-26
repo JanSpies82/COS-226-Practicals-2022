@@ -29,7 +29,6 @@ public class VotingStation {
 					YELLOW + "[" + Thread.currentThread().getName() + "] [Person " + person + "] cast a vote" + RESET);
 		} catch (Exception e) {
 		} finally {
-			// System.out.println(Thread.currentThread().getName() + " Person " + person + " exits" + RESET);
 			l.unlock();
 		}
 	}
