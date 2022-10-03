@@ -1,10 +1,6 @@
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class FineList<T> {
     private Node<T> head;
-    private Lock lock = new ReentrantLock();
 
     public static final String RESET = "\033[0m";
     public static final String BLACK = "\033[0;30m";
@@ -23,15 +19,18 @@ public class FineList<T> {
     }
 
     public boolean add(T item, int person, long time) {
-        Node pred, curr;
+        Node pred = head, curr = pred.next;
         int key = item.hashCode();
-        lock.lock();
         try {
             pred = head;
+            pred.lock.lock();
             curr = pred.next;
+            curr.lock.lock();
             while (curr.key < key) {
+                pred.lock.unlock();
                 pred = curr;
                 curr = curr.next;
+                curr.lock.lock();
             }
             if (key == curr.key)
                 return false;
@@ -43,30 +42,35 @@ public class FineList<T> {
                 return true;
             }
         } finally {
-            lock.unlock();
+            pred.lock.unlock();
+            curr.lock.unlock();
         }
     }
 
     public boolean remove(T item) {
-        Node pred, curr;
+        Node pred = head, curr = head.next;
         int key = item.hashCode();
-        lock.lock();
         printList();
         try {
             pred = head;
+            pred.lock.lock();
             curr = pred.next;
-            while (curr.key < key) {
+            curr.lock.lock();
+            while (curr.key <= key) {
+                if (item == curr.item) {
+                    pred.next = curr.next;
+                    return true;
+                }
+                pred.lock.unlock();
                 pred = curr;
                 curr = curr.next;
+                curr.lock.lock();
             }
-            if (key == curr.key) {
-                pred.next = curr.next;
-                return true;
-            } else
-                return false;
+            return false;
 
         } finally {
-            lock.unlock();
+            curr.lock.unlock();
+            pred.lock.unlock();
         }
     }
 
@@ -76,8 +80,9 @@ public class FineList<T> {
         if (curr.person != -1)
             out += "[" + YELLOW + curr.tName + RESET + " (" + BLUE + "P-" +
                     +curr.person + RESET + ", " + ((curr.time - (System.currentTimeMillis() - curr.startTime) > 0)
-                    ? (curr.time - (System.currentTimeMillis() - curr.startTime))
-                    : 0) + "ms)"
+                            ? (curr.time - (System.currentTimeMillis() - curr.startTime))
+                            : 0)
+                    + "ms)"
                     + "]";
         while (curr.next != null) {
             curr = curr.next;

@@ -1,3 +1,6 @@
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 @SuppressWarnings({ "rawtypes" })
 public class Node<T> {
     public T item;
@@ -7,6 +10,7 @@ public class Node<T> {
     String name;
     public long startTime, time;
     String tName;
+    public Lock lock = new ReentrantLock();
 
     public static final String RESET = "\033[0m";
     public static final String YELLOW = "\033[0;33m";
