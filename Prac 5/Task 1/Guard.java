@@ -13,7 +13,8 @@ public class Guard extends Thread {
     }
 
     public void run() {
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 10; i++) {
+            long startTime = System.currentTimeMillis();
             person = i;
             long time = (int) Math.floor(Math.random() * (1000 + 1 - 100 + 1) + 100);
             g.enter(person, time);
@@ -23,6 +24,12 @@ public class Guard extends Thread {
                 e.printStackTrace();
             }
             g.exit();
+            if (System.currentTimeMillis() - startTime < 200)
+                try {
+                    Thread.sleep(200 - (System.currentTimeMillis() - startTime));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
         }
     }
 }

@@ -37,9 +37,9 @@ public class CoarseList<T> {
                 return false;
             else {
                 Node node = new Node(item, person, time);
-                System.out.println(node.getName() + GREEN + " has been added" + RESET);
                 node.next = curr;
                 pred.next = node;
+                System.out.println(node.getName() + GREEN + " has been added" + RESET);
                 return true;
             }
         } finally {
@@ -74,11 +74,20 @@ public class CoarseList<T> {
         Node curr = head.next;
         String out = RED + "List: " + RESET;
         if (curr.person != -1)
-            out += "[" + curr.getName() + "]";
+            out += "[" + YELLOW + curr.tName + RESET + " (" + BLUE + "P-" +
+                    +curr.person + RESET + ", " + ((curr.time - (System.currentTimeMillis() - curr.startTime) > 0)
+                    ? (curr.time - (System.currentTimeMillis() - curr.startTime))
+                    : 0) + "ms)"
+                    + "]";
         while (curr.next != null) {
             curr = curr.next;
             if (curr.person != -1)
-                out += "-> [" + curr.getName() + "]";
+                out += " -> [" + YELLOW + curr.tName + RESET + " (" + BLUE + "P-" +
+                        +curr.person + RESET + ", "
+                        + ((curr.time - (System.currentTimeMillis() - curr.startTime) > 0)
+                                ? (curr.time - (System.currentTimeMillis() - curr.startTime))
+                                : 0)
+                        + "ms)" + "]";
         }
         System.out.println(out);
     }
