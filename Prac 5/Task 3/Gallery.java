@@ -7,10 +7,10 @@ public class Gallery {
     }
 
     public void enter(int person, long time) {
-        c.add(Thread.currentThread(), person, time);
+        while (!c.add(Thread.currentThread(), person, time)){};
     }
 
     public void exit() {
-        c.remove(Thread.currentThread());
+        while (!c.remove(Thread.currentThread())){};
     }
 }

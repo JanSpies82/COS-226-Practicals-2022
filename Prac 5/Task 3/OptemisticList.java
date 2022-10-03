@@ -18,29 +18,40 @@ public class OptemisticList<T> {
 
     }
 
+    private boolean validate(Node pred, Node curr) {
+        Node node = head;
+        while (node.key <= pred.key) {
+            if (node == pred)
+                return pred.next == curr;
+            node = node.next;
+        }
+        return false;
+    }
+
     public boolean add(T item, int person, long time) {
         Node pred = head, curr = pred.next;
         int key = item.hashCode();
+        while (curr.key <= key) {
+            if (item == curr.item)
+                break;
+            pred = curr;
+            curr = curr.next;
+        }
         try {
-            pred = head;
             pred.lock.lock();
-            curr = pred.next;
             curr.lock.lock();
-            while (curr.key < key) {
-                pred.lock.unlock();
-                pred = curr;
-                curr = curr.next;
-                curr.lock.lock();
-            }
-            if (key == curr.key)
+            if (validate(pred, curr)) {
+                if (key == curr.key)
+                    return false;
+                else {
+                    Node node = new Node(item, person, time);
+                    node.next = curr;
+                    pred.next = node;
+                    System.out.println(node.getName() + GREEN + " has been added" + RESET);
+                    return true;
+                }
+            } else
                 return false;
-            else {
-                Node node = new Node(item, person, time);
-                node.next = curr;
-                pred.next = node;
-                System.out.println(node.getName() + GREEN + " has been added" + RESET);
-                return true;
-            }
         } finally {
             pred.lock.unlock();
             curr.lock.unlock();
@@ -51,23 +62,24 @@ public class OptemisticList<T> {
         Node pred = head, curr = head.next;
         int key = item.hashCode();
         printList();
+
+        while (curr.key <= key) {
+            if (item == curr.item)
+                break;
+            pred = curr;
+            curr = curr.next;
+        }
         try {
-            pred = head;
             pred.lock.lock();
-            curr = pred.next;
             curr.lock.lock();
-            while (curr.key <= key) {
-                if (item == curr.item) {
+            if (validate(pred, curr)) {
+                if (curr.item == item) {
                     pred.next = curr.next;
                     return true;
-                }
-                pred.lock.unlock();
-                pred = curr;
-                curr = curr.next;
-                curr.lock.lock();
+                } else
+                    return false;
             }
             return false;
-
         } finally {
             curr.lock.unlock();
             pred.lock.unlock();
