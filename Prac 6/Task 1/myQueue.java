@@ -37,12 +37,21 @@ public class myQueue<T> {
             array[tail.get()] = e;
             tail.set((tail.get() + 1) % array.length);
             // synchronized (notEmpty){
-
-            // if (size.getAndIncrement() == 0)
-            //     notEmpty.signalAll();
+            // size.getAndIncrement();
+            // TODO fix signalAll
+            if (size.getAndIncrement() == 0)
+                notEmpty.signalAll();
 
             // }
             // wakeDeqs = true;
+            System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
+            String out = "QUEUE: ";
+            int i = head.get();
+            while (i != tail.get()) {
+                out += "{" + array[i].value + "} -> ";
+                i = (i + 1) % array.length;
+            }
+            System.out.println(out);
         } finally {
             enqLock.unlock();
         }
@@ -51,7 +60,6 @@ public class myQueue<T> {
         // notEmpty.signalAll();
         // }
 
-        System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
         return true;
     }
 
@@ -72,18 +80,26 @@ public class myQueue<T> {
             result = (T) array[head.get()].value;
             array[head.get()] = null;
             head.set((head.get() + 1) % array.length);
+            // TODO fix signalAll
             if (size.getAndDecrement() == array.length)
                 wakeEnqs = true;
+            System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
+            String out = "QUEUE: ";
+            int i = head.get();
+            while (i != tail.get()) {
+                out += "{" + array[i].value + "} -> ";
+                i = (i + 1) % array.length;
+            }
+            System.out.println(out);
         } finally {
             deqLock.unlock();
         }
 
         // synchronized (notFull) {
-        //     if (wakeEnqs)
-        //         notFull.signalAll();
+        // if (wakeEnqs)
+        // notFull.signalAll();
         // }
 
-        System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
         return result;
     }
 
