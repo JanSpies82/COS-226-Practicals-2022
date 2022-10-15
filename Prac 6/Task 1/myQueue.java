@@ -7,20 +7,22 @@ public class myQueue<T> {
     AtomicInteger head, tail, size;
     Node[] array;
     Lock enqLock, deqLock;
-    Condition notFull, notEmpty;
+    static volatile Condition notFull, notEmpty;
 
     public myQueue() {
         head = new AtomicInteger(0);
         tail = new AtomicInteger(0);
-        size = new AtomicInteger(5);
+        size = new AtomicInteger(0);
         array = new Node[5];
+        // for (int i = 0; i < 5; i++)
+        // array[i] = null;
         enqLock = new ReentrantLock();
         deqLock = new ReentrantLock();
         notFull = enqLock.newCondition();
         notEmpty = deqLock.newCondition();
     }
 
-    public void enq(T x) {
+    public boolean enq(T x) {
         boolean wakeDeqs = false;
         enqLock.lock();
         try {
@@ -34,26 +36,35 @@ public class myQueue<T> {
             Node e = new Node(x);
             array[tail.get()] = e;
             tail.set((tail.get() + 1) % array.length);
-            if (size.getAndIncrement() == 0)
-                wakeDeqs = true;
+            // synchronized (notEmpty){
+
+            // if (size.getAndIncrement() == 0)
+            //     notEmpty.signalAll();
+
+            // }
+            // wakeDeqs = true;
         } finally {
             enqLock.unlock();
         }
-
-        if (wakeDeqs)
-            notEmpty.signalAll();
+        // synchronized (notEmpty) {
+        // if (wakeDeqs)
+        // notEmpty.signalAll();
+        // }
 
         System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
+        return true;
     }
 
-    public T deq() {
+    public synchronized T deq() {
         T result = null;
         boolean wakeEnqs = false;
         deqLock.lock();
         try {
             while (size.get() == 0) {
                 try {
+                    // synchronized (notEmpty) {
                     notEmpty.await();
+                    // }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -67,8 +78,10 @@ public class myQueue<T> {
             deqLock.unlock();
         }
 
-        if (wakeEnqs)
-            notFull.signalAll();
+        // synchronized (notFull) {
+        //     if (wakeEnqs)
+        //         notFull.signalAll();
+        // }
 
         System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
         return result;

@@ -16,13 +16,17 @@ public class myThread extends Thread {
 
     public void run() {
         for (int i = 1; i <= 5; i++) {
-            q.enq(this);
+            /*while (!*/q.enq(Thread.currentThread().getName() + " " + i)/* ) {*/
+            // }
+            ;
             try {
-                Thread.sleep((int) Math.floor(Math.random() * (1000 - 1 + 2) + 1));
+                Thread.sleep((int) Math.floor(Math.random() * (100 - 10 + 2) + 10));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            q.deq();
+            /*while (*/q.deq() /*== null ) {*/
+            // }
+            ;
         }
     }
 }
