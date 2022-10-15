@@ -42,6 +42,8 @@ public class myQueue<T> {
 
         if (wakeDeqs)
             notEmpty.signalAll();
+
+        System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
     }
 
     public T deq() {
@@ -67,6 +69,8 @@ public class myQueue<T> {
 
         if (wakeEnqs)
             notFull.signalAll();
+
+        System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
         return result;
     }
 
