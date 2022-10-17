@@ -14,7 +14,8 @@ public class myThread extends Thread {
     public myThread(myQueue q) {
         this.q = q;
     }
-
+    
+    @SuppressWarnings("unchecked")
     public void run() {
         for (int i = 1; i <= 5; i++) {
             q.enq(Thread.currentThread().getName() + " " + i);
