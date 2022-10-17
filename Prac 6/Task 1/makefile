@@ -1,5 +1,6 @@
 run: main
 		java Main
+		make c
 
 main:	*.java
 		javac *.java

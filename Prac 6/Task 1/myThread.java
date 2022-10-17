@@ -1,3 +1,4 @@
+@SuppressWarnings({ "rawtypes", "generics" })
 public class myThread extends Thread {
     public volatile myQueue q;
     public static final String RESET = "\033[0m";
@@ -16,17 +17,13 @@ public class myThread extends Thread {
 
     public void run() {
         for (int i = 1; i <= 5; i++) {
-            /*while (!*/q.enq(Thread.currentThread().getName() + " " + i)/* ) {*/
-            // }
-            ;
+            q.enq(Thread.currentThread().getName() + " " + i);
             try {
                 Thread.sleep((int) Math.floor(Math.random() * (100 - 10 + 2) + 10));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            /*while (*/q.deq() /*== null ) {*/
-            // }
-            ;
+            q.deq();
         }
     }
 }

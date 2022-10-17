@@ -3,30 +3,32 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@SuppressWarnings({ "unchecked", "rawtypes", "generics" })
 public class myQueue<T> {
     AtomicInteger head, tail, size;
     Node[] array;
     Lock enqLock, deqLock;
-    static volatile Condition notFull, notEmpty;
+    int capacity;
+    volatile Condition notFull, notEmpty;
+    volatile boolean first = true;
 
     public myQueue() {
         head = new AtomicInteger(0);
         tail = new AtomicInteger(0);
         size = new AtomicInteger(0);
         array = new Node[5];
-        // for (int i = 0; i < 5; i++)
-        // array[i] = null;
+        capacity = 5;
         enqLock = new ReentrantLock();
         deqLock = new ReentrantLock();
         notFull = enqLock.newCondition();
         notEmpty = deqLock.newCondition();
     }
 
-    public boolean enq(T x) {
+    public void enq(T x) {
         boolean wakeDeqs = false;
         enqLock.lock();
         try {
-            while (size.get() == array.length) {
+            while (size.get() == capacity) {
                 try {
                     notFull.await();
                 } catch (InterruptedException e) {
@@ -39,28 +41,38 @@ public class myQueue<T> {
             // synchronized (notEmpty){
             // size.getAndIncrement();
             // TODO fix signalAll
-            if (size.getAndIncrement() == 0)
-                notEmpty.signalAll();
-
+            // synchronized (notEmpty) {
+            if (size.getAndIncrement() == 0/* && !first */)
+                wakeDeqs = true;
+            // }
+            // first = false;
             // }
             // wakeDeqs = true;
             System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
-            String out = "QUEUE: ";
+            String out = "QUEUE [" + size.get() + "]: ";
             int i = head.get();
-            while (i != tail.get()) {
+            boolean first = true;
+            while (i != tail.get() || first) {
                 out += "{" + array[i].value + "} -> ";
                 i = (i + 1) % array.length;
+                first = false;
             }
             System.out.println(out);
+            // } catch (Exception e) {
         } finally {
             enqLock.unlock();
         }
         // synchronized (notEmpty) {
-        // if (wakeDeqs)
+        if (wakeDeqs) {
+            deqLock.lock();
+            try {
+                notEmpty.signalAll();
+            } finally {
+                deqLock.unlock();
+            }
+        }
         // notEmpty.signalAll();
         // }
-
-        return true;
     }
 
     public synchronized T deq() {
@@ -81,16 +93,19 @@ public class myQueue<T> {
             array[head.get()] = null;
             head.set((head.get() + 1) % array.length);
             // TODO fix signalAll
-            if (size.getAndDecrement() == array.length)
+            // synchronized (notFull) {
+            if (size.getAndDecrement() == capacity)
                 wakeEnqs = true;
+            // }
             System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
-            String out = "QUEUE: ";
+            String out = "QUEUE [" + size.get() + "]: ";
             int i = head.get();
             while (i != tail.get()) {
                 out += "{" + array[i].value + "} -> ";
                 i = (i + 1) % array.length;
             }
             System.out.println(out);
+            // } catch (Exception e) {
         } finally {
             deqLock.unlock();
         }
@@ -99,6 +114,14 @@ public class myQueue<T> {
         // if (wakeEnqs)
         // notFull.signalAll();
         // }
+        if (wakeEnqs) {
+            enqLock.lock();
+            try {
+                notFull.signalAll();
+            } finally {
+                enqLock.unlock();
+            }
+        }
 
         return result;
     }
