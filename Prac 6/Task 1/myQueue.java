@@ -10,7 +10,6 @@ public class myQueue<T> {
     Lock enqLock, deqLock;
     int capacity;
     volatile Condition notFull, notEmpty;
-    volatile boolean first = true;
 
     public myQueue() {
         head = new AtomicInteger(0);
@@ -38,16 +37,9 @@ public class myQueue<T> {
             Node e = new Node(x);
             array[tail.get()] = e;
             tail.set((tail.get() + 1) % array.length);
-            // synchronized (notEmpty){
-            // size.getAndIncrement();
-            // TODO fix signalAll
-            // synchronized (notEmpty) {
-            if (size.getAndIncrement() == 0/* && !first */)
+            if (size.getAndIncrement() == 0)
                 wakeDeqs = true;
-            // }
-            // first = false;
-            // }
-            // wakeDeqs = true;
+
             System.out.println(myThread.GREEN + "Enqueued " + x + myThread.RESET);
             String out = "QUEUE [" + size.get() + "]: ";
             int i = head.get();
@@ -58,11 +50,9 @@ public class myQueue<T> {
                 first = false;
             }
             System.out.println(out);
-            // } catch (Exception e) {
         } finally {
             enqLock.unlock();
         }
-        // synchronized (notEmpty) {
         if (wakeDeqs) {
             deqLock.lock();
             try {
@@ -71,8 +61,6 @@ public class myQueue<T> {
                 deqLock.unlock();
             }
         }
-        // notEmpty.signalAll();
-        // }
     }
 
     public synchronized T deq() {
@@ -82,9 +70,7 @@ public class myQueue<T> {
         try {
             while (size.get() == 0) {
                 try {
-                    // synchronized (notEmpty) {
                     notEmpty.await();
-                    // }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -92,11 +78,8 @@ public class myQueue<T> {
             result = (T) array[head.get()].value;
             array[head.get()] = null;
             head.set((head.get() + 1) % array.length);
-            // TODO fix signalAll
-            // synchronized (notFull) {
             if (size.getAndDecrement() == capacity)
                 wakeEnqs = true;
-            // }
             System.out.println(myThread.RED + "Dequeued " + result + myThread.RESET);
             String out = "QUEUE [" + size.get() + "]: ";
             int i = head.get();
@@ -105,15 +88,10 @@ public class myQueue<T> {
                 i = (i + 1) % array.length;
             }
             System.out.println(out);
-            // } catch (Exception e) {
         } finally {
             deqLock.unlock();
         }
 
-        // synchronized (notFull) {
-        // if (wakeEnqs)
-        // notFull.signalAll();
-        // }
         if (wakeEnqs) {
             enqLock.lock();
             try {
